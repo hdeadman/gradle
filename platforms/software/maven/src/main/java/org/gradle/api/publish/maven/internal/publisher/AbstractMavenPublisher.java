@@ -299,8 +299,6 @@ abstract class AbstractMavenPublisher implements MavenPublisher {
                 }
             });
         }
-
-
     }
 
 }
