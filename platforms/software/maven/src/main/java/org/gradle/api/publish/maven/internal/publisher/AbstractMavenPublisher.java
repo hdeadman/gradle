@@ -16,10 +16,12 @@
 
 package org.gradle.api.publish.maven.internal.publisher;
 
+import groovyjarjarantlr4.v4.runtime.misc.Nullable;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.Versioning;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Writer;
+import org.gradle.api.NonNullApi;
 import org.gradle.api.UncheckedIOException;
 import org.gradle.api.internal.artifacts.repositories.resolver.ExternalResourceResolver;
 import org.gradle.api.internal.artifacts.repositories.transport.NetworkOperationBackOffAndRetry;
@@ -47,6 +49,7 @@ import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.regex.Pattern;
 
+@NonNullApi
 abstract class AbstractMavenPublisher implements MavenPublisher {
     private static final Logger LOGGER = LoggerFactory.getLogger(MavenPublisher.class);
 
@@ -220,6 +223,7 @@ abstract class AbstractMavenPublisher implements MavenPublisher {
         /**
          * Publishes a single module artifact, based on classifier and extension.
          */
+        @Nullable
         void publish(String classifier, String extension, File content) {
             StringBuilder path = new StringBuilder(128);
             path.append(groupPath).append('/');
