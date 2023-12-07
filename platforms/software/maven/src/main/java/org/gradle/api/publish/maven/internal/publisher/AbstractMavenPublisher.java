@@ -223,8 +223,7 @@ abstract class AbstractMavenPublisher implements MavenPublisher {
         /**
          * Publishes a single module artifact, based on classifier and extension.
          */
-        @Nullable
-        void publish(String classifier, String extension, File content) {
+        void publish(@Nullable String classifier, String extension, File content) {
             StringBuilder path = new StringBuilder(128);
             path.append(groupPath).append('/');
             path.append(artifactId).append('/');
