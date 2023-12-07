@@ -31,7 +31,7 @@ import org.gradle.internal.component.model.IvyArtifactName;
 import java.util.concurrent.Callable;
 
 public class DependencyResolverIvyPublisher implements IvyPublisher {
-    private final NetworkOperationBackOffAndRetry<String> networkOperationBackOffAndRetry = new NetworkOperationBackOffAndRetry<>();
+    private final NetworkOperationBackOffAndRetry<Void> networkOperationBackOffAndRetry = new NetworkOperationBackOffAndRetry<>();
 
     @Override
     public void publish(IvyNormalizedPublication publication, IvyArtifactRepository repository) {
@@ -45,11 +45,11 @@ public class DependencyResolverIvyPublisher implements IvyPublisher {
     }
 
     private void publish(IvyResolver publisher, IvyArtifact artifact, ModuleComponentArtifactMetadata artifactMetadata) {
-        networkOperationBackOffAndRetry.withBackoffAndRetry(new Callable<String>() {
+        networkOperationBackOffAndRetry.withBackoffAndRetry(new Callable<Void>() {
             @Override
-            public String call() {
+            public Void call() {
                 publisher.publish(artifactMetadata, artifact.getFile());
-                return "";
+                return null;
             }
 
             @Override

@@ -175,7 +175,7 @@ abstract class AbstractMavenPublisher implements MavenPublisher {
      * Publishes artifacts for a single Maven module.
      */
     private static class ModuleArtifactPublisher {
-        private final NetworkOperationBackOffAndRetry<String> networkOperationCaller = new NetworkOperationBackOffAndRetry<>();
+        private final NetworkOperationBackOffAndRetry<Void> networkOperationCaller = new NetworkOperationBackOffAndRetry<>();
         private final ExternalResourceRepository repository;
         private final boolean localRepo;
         private final URI rootUri;
@@ -286,11 +286,11 @@ abstract class AbstractMavenPublisher implements MavenPublisher {
         }
 
         private void putResource(ExternalResourceName externalResource, ReadableContent readableContent) {
-            networkOperationCaller.withBackoffAndRetry(new Callable<String>() {
+            networkOperationCaller.withBackoffAndRetry(new Callable<Void>() {
                 @Override
-                public String call() {
+                public Void call() {
                     repository.resource(externalResource).put(readableContent);
-                    return "";
+                    return null;
                 }
 
                 @Override
