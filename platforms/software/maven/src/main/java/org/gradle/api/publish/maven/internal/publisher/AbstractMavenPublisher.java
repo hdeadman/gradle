@@ -16,7 +16,6 @@
 
 package org.gradle.api.publish.maven.internal.publisher;
 
-import groovyjarjarantlr4.v4.runtime.misc.Nullable;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.Versioning;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
@@ -41,11 +40,14 @@ import org.gradle.internal.xml.XmlTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.regex.Pattern;
 
@@ -118,12 +120,11 @@ abstract class AbstractMavenPublisher implements MavenPublisher {
     private Versioning getExistingVersioning(ExternalResourceRepository repository, ExternalResourceName metadataResource) {
         ExternalResourceReadResult<Metadata> existing = readExistingMetadata(repository, metadataResource);
 
-        if (existing != null) {
-            Metadata recessive = existing.getResult();
-            if (recessive.getVersioning() != null) {
-                return recessive.getVersioning();
-            }
+        Metadata recessive = existing.getResult();
+        if (recessive != null && recessive.getVersioning() != null) {
+            return recessive.getVersioning();
         }
+
         return new Versioning();
     }
 
@@ -139,7 +140,7 @@ abstract class AbstractMavenPublisher implements MavenPublisher {
         return metadataFile;
     }
 
-    private boolean isSnapshot(String version) {
+    private boolean isSnapshot(@Nullable String version) {
         if (version != null) {
             if (version.regionMatches(true, version.length() - SNAPSHOT_VERSION.length(),
                 SNAPSHOT_VERSION, 0, SNAPSHOT_VERSION.length())) {
@@ -151,17 +152,18 @@ abstract class AbstractMavenPublisher implements MavenPublisher {
         return false;
     }
 
+    @Nonnull
     ExternalResourceReadResult<Metadata> readExistingMetadata(ExternalResourceRepository repository, ExternalResourceName metadataResource) {
         return metadataRetryCaller.withBackoffAndRetry(new Callable<ExternalResourceReadResult<Metadata>>() {
             @Override
             public ExternalResourceReadResult<Metadata> call() {
-                return repository.resource(metadataResource).withContentIfPresent(inputStream -> {
+                return Objects.requireNonNull(repository.resource(metadataResource).withContentIfPresent(inputStream -> {
                     try {
                         return new MetadataXpp3Reader().read(inputStream, false);
                     } catch (Exception e) {
                         throw UncheckedException.throwAsUncheckedException(e);
                     }
-                });
+                }));
             }
 
             @Override
